@@ -1,0 +1,70 @@
+# DGF1 Checked-In Fixture Manifest
+#
+# format_revision: DGF1 (Khronos Vulkan-Docs 33d3353757d83d6aca683120114fe74cc4eaf8fb,
+#                        AMD DGF-SDK d97e46493b92d7b2e4445f740fc9dcc7ff53aff3)
+# provenance: Independently hand-derived from the DGF1 bit layout specification.
+#             These fixtures are NOT represented as AMD SDK encoder output.
+#             All byte lengths, headers, integer coordinates, topology, metadata,
+#             and SHA-256 digests are verified in `tests/fixtures_test.rs` against both
+#             the production codec and the independent reference interpreter.
+
+[fixture.starter_single_tri]
+source_kind = "hand_derived"
+byte_length = 128
+sha256 = "cd94a17fc87f32017a41d7a7c48329edf232012621e346d9708fba45447f79de"
+expected_result = "valid"
+reason = "Section 21 hand-derived 1-triangle starter vector (anchor=[0,0,0], exp=127, widths=[2,1,1], geom=0, opaque=true)"
+
+[fixture.two_tris_edge1]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Two connected triangles using EDGE1 and one newly introduced vertex"
+
+[fixture.two_disconnected_tris_restart]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Two disconnected triangles using RESTART and three newly introduced vertices"
+
+[fixture.backtrack_after_edge1]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Legal BACKTRACK following EDGE1 (reusing [d, f, n])"
+
+[fixture.backtrack_after_edge2]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Legal BACKTRACK following EDGE2 (reusing [f, e, n])"
+
+[fixture.repeated_low_vertex_3bit_reuse]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Repeated low-numbered vertex using 3-bit repeated-index width"
+
+[fixture.geom_id_512_one_entry_25bit_prefix]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Geometry ID 512 exceeding constant mode, stored in 1-entry palette with 25-bit prefix (0 selector/payload bits)"
+
+[fixture.user_data_plus_geom_palette]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "Optional 4-byte user data combined with geometry palette (verifies palette offset after user data + vertices)"
+
+[fixture.omm_one_descriptor_plus_user_data]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid"
+reason = "1 OMM descriptor (0 selector bits, 12-byte hot-patch) + user data + geometry palette"
+
+[fixture.noncanonical_nonzero_gap_and_unused_vertex]
+source_kind = "hand_derived"
+byte_length = 128
+expected_result = "valid_but_noncanonical"
+reason = "Unused gap bits between repeat_end and tail_start are nonzero, and trailing vertex is unused; structurally legal DGF1"
