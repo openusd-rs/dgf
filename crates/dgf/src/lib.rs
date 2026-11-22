@@ -73,3 +73,10 @@ pub use error::EncodeError;
 
 /// Canonical encoder policy identifier (independent of DGF1 wire format compatibility).
 pub const CANONICAL_ENCODER_POLICY: &str = "dgf-rs-v1";
+
+/// Pure WGSL scalar DGF1 block decoder shader source (`decode_blocks` compute entry point + helpers).
+///
+/// Uses strictly 32-bit integer arithmetic (`u32`/`i32`) and IEEE-754 `f32` scaling so decoded
+/// vertex positions, triangle indices, geometry IDs, opacity flags, primitive IDs, user data,
+/// and OMM selectors match [`decode_block`] bit-for-bit on WebGPU/Vulkan/Metal/DX12.
+pub const WGSL_DECODER_SOURCE: &str = include_str!("../shaders/dgf_decode.wgsl");
