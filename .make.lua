@@ -124,9 +124,9 @@ make.recipe{
 
 local EXAMPLE = os.getenv("EXAMPLE") or "main"
 
-make.recipe{ name = "build", desc = "the library",
+make.recipe{ name = "build", desc = "the workspace libraries",
              run = function()
-               sh.cargo("build", "--lib")
+               sh.cargo("build", "--workspace", "--lib")
                report_found("target", "*.rlib")
              end }
 make.alias("b", "build")
@@ -135,26 +135,26 @@ make.recipe{
   name = "run",
   desc = "run a development example: --example NAME",
   params = { { "--example", desc = "which example to run", default = EXAMPLE } },
-  run = function(a) sh.cargo("run", "--example", a.example or EXAMPLE) end,
+  run = function(a) sh.cargo("run", "-p", "dgf", "--example", a.example or EXAMPLE) end,
 }
 make.alias("r", "run")
 
 make.recipe{ name = "test", desc = "the suite",
-             run = function() sh.cargo("test", "--all-targets") end }
+             run = function() sh.cargo("test", "--workspace", "--all-targets") end }
 make.alias("t", "test")
 
 make.recipe{ name = "test-all", desc = "the suite, with every feature on",
-             run = function() sh.cargo("test", "--all-targets", "--all-features") end }
+             run = function() sh.cargo("test", "--workspace", "--all-targets", "--all-features") end }
 
 make.recipe{ name = "check", desc = "type-check every target",
-             run = function() sh.cargo("check", "--all-targets") end }
+             run = function() sh.cargo("check", "--workspace", "--all-targets") end }
 
 make.recipe{ name = "check-all", desc = "type-check every target, every feature",
-             run = function() sh.cargo("check", "--all-targets", "--all-features") end }
+             run = function() sh.cargo("check", "--workspace", "--all-targets", "--all-features") end }
 
 make.recipe{ name = "clippy", desc = "clippy, with warnings denied",
              run = function()
-               sh.cargo("clippy", "--all-targets", "--all-features", "--", "-Dwarnings")
+               sh.cargo("clippy", "--workspace", "--all-targets", "--all-features", "--", "-Dwarnings")
              end }
 
 make.recipe{
@@ -162,7 +162,7 @@ make.recipe{
   desc = "build the docs, with warnings denied",
   run = function()
     local built = oslo.run{ "env", "RUSTDOCFLAGS=-Dwarnings",
-                            "cargo", "doc", "--all-features", "--no-deps" }
+                            "cargo", "doc", "--workspace", "--all-features", "--no-deps" }
     assert(built.ok, "rustdoc failed")
   end,
 }

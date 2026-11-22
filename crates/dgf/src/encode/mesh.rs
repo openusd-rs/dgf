@@ -101,7 +101,7 @@ impl Default for EncodeOptions {
             enable_exponent_adjustment: false,
             cluster_config: ClusterConfig::default(),
             max_blocks: 16_777_216,
-            parallel: false,
+            parallel: cfg!(feature = "parallel"),
         }
     }
 }
@@ -705,46 +705,8 @@ fn pack_work_units(
 
     #[cfg(feature = "parallel")]
     if options.parallel && work_units.len() > 1 {
-        let num_threads = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1)
-            .min(work_units.len());
-        if num_threads > 1 {
-            let total = work_units.len();
-            let chunk_size = total.div_ceil(num_threads);
-            let mut results: Vec<Option<Result<ClusterPackOutput, EncodeError>>> =
-                (0..total).map(|_| None).collect();
-
-            // Partition work_units and result slots into disjoint slices processed concurrently.
-            let mut unit_chunks: Vec<Vec<(Option<usize>, Vec<usize>)>> =
-                Vec::with_capacity(num_threads);
-            let mut unit_iter = work_units.into_iter();
-            for _ in 0..num_threads {
-                let chunk: Vec<_> = unit_iter.by_ref().take(chunk_size).collect();
-                if !chunk.is_empty() {
-                    unit_chunks.push(chunk);
-                }
-            }
-
-            std::thread::scope(|scope| {
-                let mut rem_results = results.as_mut_slice();
-                for chunk in unit_chunks {
-                    let (slot_slice, rest) = rem_results.split_at_mut(chunk.len());
-                    rem_results = rest;
-                    scope.spawn(move || {
-                        for (slot, unit) in slot_slice.iter_mut().zip(chunk.into_iter()) {
-                            *slot = Some(pack_one(unit));
-                        }
-                    });
-                }
-            });
-
-            let mut out = Vec::with_capacity(total);
-            for slot in results {
-                out.push(slot.expect("every cluster slot populated")?);
-            }
-            return Ok(out);
-        }
+        use rayon::prelude::*;
+        return work_units.into_par_iter().map(pack_one).collect();
     }
 
     let mut out = Vec::with_capacity(work_units.len());

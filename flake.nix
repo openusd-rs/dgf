@@ -1,14 +1,15 @@
 {
-  description = "dgf Rust development shell";
+  description = "openusd-dgf Rust development shell";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?rev=4c1018dae018162ec878d42fec712642d214fdfa";
+    rust-overlay.url = "github:oxalica/rust-overlay";
     flake-utils.url = "github:numtide/flake-utils";
     nixgl.url = "github:nix-community/nixGL";
   };
 
   outputs =
-    { nixpkgs, flake-utils, nixgl, ... }:
+    { nixpkgs, rust-overlay, flake-utils, nixgl, ... }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
@@ -20,6 +21,7 @@
               libxshmfence = final.libxshmfence;
             };
           })
+          (import rust-overlay)
         ];
 
         pkgs = import nixpkgs {
@@ -73,10 +75,9 @@
       {
         devShells.default = pkgs.mkShell {
           packages = [
-            pkgs.rustc
-            pkgs.cargo
-            pkgs.rustfmt
-            pkgs.clippy
+            (pkgs.rust-bin.stable."1.98.1".default.override {
+              extensions = [ "rust-src" "rustfmt" "clippy" ];
+            })
             pkgs.rust-analyzer
             pkgs.git-cliff
             pkgs.clang

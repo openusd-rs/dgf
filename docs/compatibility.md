@@ -7,13 +7,13 @@
 | AMD DGF-SDK | `d97e46493b92d7b2e4445f740fc9dcc7ff53aff3` (6 May 2026) | Format behavior & reference algorithms (studied only; zero C++ or FFI dependency) |
 | Khronos Vulkan-Docs | `33d3353757d83d6aca683120114fe74cc4eaf8fb` | Primary DGF1 specification (`dense_geometry_format.adoc`, CC-BY-4.0) |
 | Khronos DGF chapter blob | `cd9f2bc0d03dc9fdea253dc7127ff47ac5cbfa5f` | Exact inspected chapter content |
-| mxpv/openusd | `080fe5c000e950acba0d868399107bc8117ee547` (20 Nov 2026) | Future adapter boundary reference only |
+| mxpv/openusd | `900ea31591348e3fbf416d4661d703aa8700771b` (aligned with `openusd-rs/bevy_openusd`) | `crates/openusd-dgf` adapter crate |
 | HPG 2024 paper | DOI `10.1145/3675383` | Design rationale |
 
 ## Dependency & Safety Policy
 
 - **Pure Rust throughout:** zero C/C++, FFI, `-sys` crates, CMake, bindgen, native fuzz engines, or external encoder binaries in build, runtime, or required tests.
-- **Zero external crate dependencies** in `dgf` (`Cargo.toml` has empty `[dependencies]` and `[dev-dependencies]`).
+- **Minimal audited dependencies:** `rayon` (pure Rust, optional, enabled by the default `parallel` feature); disabling `parallel` (`--no-default-features --features encode` or `--no-default-features`) has zero external dependencies.
 - **`#![forbid(unsafe_code)]`** enforced crate-wide.
 - **`no_std` block codec:** disabling default features (`--no-default-features`) builds the zero-allocation block validator and decoder without `std`.
 
@@ -57,10 +57,10 @@ Every observed discrepancy between pinned sources and the behavior chosen by thi
 | Primitive ID base (29-bit checked range) | Yes | Yes | Checked prefix sums in mesh baker |
 | Triangle / corner / vertex remaps & attribute helpers | N/A | Yes | Mandatory output maps; no hidden welding |
 | Spatial clustering & exact-fit SAH packing | N/A | Yes | Explicit work stack, `f64` SAH, preclustered input API |
-| Deterministic parallel cluster packing (`parallel` feature) | N/A | Yes | Pure `std::thread::scope`, identical output to serial |
+| Deterministic parallel cluster packing (`parallel` feature) | N/A | Yes | Pure-Rust `rayon`, enabled by default, identical output to serial |
 | DGFS supercompression | No | No | Explicitly deferred outside DGF1 |
 | GPU / Vulkan hardware decoding | No | No | Explicitly deferred outside CPU codec |
-| OpenUSD adapter (`openusd-dgf`) | No | No | Optional separate companion crate |
+| OpenUSD adapter (`crates/openusd-dgf`) | Yes | Yes | Static triangle meshes (`subdivisionScheme = none`), subsets, primvars/UV seams, content-addressed cache (`UsdDgfCache`); `crates/dgf` remains USD-free |
 
 ## Canonical Encoder Policy Version
 

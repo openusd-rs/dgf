@@ -2,7 +2,7 @@
 //!
 //! # Guarantees and Design Policy
 //!
-//! - **Pure Rust:** zero C++, FFI, `-sys` wrappers, build scripts, or external crate dependencies.
+//! - **Pure Rust:** zero C++, FFI, `-sys` wrappers, or build scripts (only optional `rayon` under the default `parallel` feature).
 //! - **Memory safe:** `#![forbid(unsafe_code)]` across the entire crate.
 //! - **Allocation-free block decoder:** disabling default features (`--no-default-features`)
 //!   provides `#![no_std]` block validation and decoding into fixed-size arrays.

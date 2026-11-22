@@ -209,8 +209,8 @@ fn mutation_structured_havoc_and_arbitrary_128_byte_campaign() {
     // 2. Completely arbitrary random 128-byte arrays (5,000 cases, forcing magic=0x06 half the time)
     for i in 0..5_000 {
         let mut block = [0u8; 128];
-        for chunk in block.chunks_exact_mut(8) {
-            chunk.copy_from_slice(&rng.next_u64().to_le_bytes());
+        for chunk in block.as_chunks_mut::<8>().0 {
+            *chunk = rng.next_u64().to_le_bytes();
         }
         if i % 2 == 0 {
             block[0] = 0x06;

@@ -71,8 +71,7 @@ fn cmd_inspect(args: &[String]) -> ExitCode {
 
     let num_blocks = data.len() / BLOCK_BYTES;
     println!("File: {path} ({} bytes, {num_blocks} blocks)", data.len());
-    for (idx, chunk) in data.chunks_exact(BLOCK_BYTES).enumerate() {
-        let arr: &[u8; BLOCK_BYTES] = chunk.try_into().expect("128-byte chunk");
+    for (idx, arr) in data.as_chunks::<BLOCK_BYTES>().0.iter().enumerate() {
         let raw = inspect_header(arr);
         match validate_block_with_mode(arr, ValidationMode::Runtime).and_then(|v| decode_block(&v))
         {

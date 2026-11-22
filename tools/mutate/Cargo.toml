@@ -5,4 +5,4 @@ edition = "2024"
 publish = false
 
 [dependencies]
-dgf = { path = "../.." }
+dgf = { path = "../../crates/dgf" }

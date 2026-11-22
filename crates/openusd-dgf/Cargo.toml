@@ -1,0 +1,15 @@
+[package]
+name = "openusd-dgf"
+version.workspace = true
+edition.workspace = true
+description = "Pure Rust OpenUSD to Dense Geometry Format (DGF1) adapter, attribute remapper, and content-addressed geometry cache"
+license.workspace = true
+readme = "../../README.md"
+publish = false
+
+[dependencies]
+dgf = { path = "../dgf" }
+openusd = { git = "https://github.com/mxpv/openusd", rev = "900ea31591348e3fbf416d4661d703aa8700771b" }
+openusd-schemas = { git = "https://github.com/mxpv/openusd", rev = "900ea31591348e3fbf416d4661d703aa8700771b", features = ["geom", "shade"] }
+
+[dev-dependencies]

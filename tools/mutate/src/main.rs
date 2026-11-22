@@ -71,8 +71,8 @@ fn main() {
     for iter in 0..iterations {
         let mut block = *seed_block.as_bytes();
         if iter % 5 == 0 {
-            for chunk in block.chunks_exact_mut(8) {
-                chunk.copy_from_slice(&rng.next_u64().to_le_bytes());
+            for chunk in block.as_chunks_mut::<8>().0 {
+                *chunk = rng.next_u64().to_le_bytes();
             }
             block[0] = 0x06;
             block[19] &= 0x3F;

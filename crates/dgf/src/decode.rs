@@ -277,12 +277,11 @@ pub fn decode_blocks_with_mode(
     }
 
     Ok(bytes
-        .chunks_exact(BLOCK_BYTES)
+        .as_chunks::<BLOCK_BYTES>()
+        .0
+        .iter()
         .enumerate()
-        .map(move |(idx, chunk)| {
-            let arr: &[u8; BLOCK_BYTES] = chunk
-                .try_into()
-                .expect("chunks_exact(128) always yields 128-byte slices");
+        .map(move |(idx, arr)| {
             let validated = validate_block_with_mode(arr, mode)
                 .map_err(|e| StreamDecodeError::at_block(idx, e))?;
             decode_block(&validated).map_err(|e| StreamDecodeError::at_block(idx, e))

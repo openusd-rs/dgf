@@ -1,0 +1,38 @@
+[package]
+name = "dgf"
+version.workspace = true
+edition.workspace = true
+description = "Pure Rust Dense Geometry Format (DGF1) encoder and decoder"
+license.workspace = true
+readme = "../../README.md"
+publish = false
+
+[features]
+default = ["std", "encode", "parallel"]
+std = []
+encode = ["std"]
+parallel = ["encode", "dep:rayon"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "dgf-cli"
+path = "src/bin/dgf_cli.rs"
+required-features = ["encode"]
+
+[[example]]
+name = "main"
+path = "examples/main.rs"
+required-features = ["encode"]
+
+[[bench]]
+name = "dgf_bench"
+harness = false
+test = false
+required-features = ["encode"]
+
+[dependencies]
+rayon = { version = "1", optional = true }
+
+[dev-dependencies]
